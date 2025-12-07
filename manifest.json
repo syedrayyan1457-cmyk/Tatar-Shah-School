@@ -1,6 +1,7 @@
 {
   "name": "Tatar Shah School",
   "short_name": "TatarSchool",
+  "description": "Official Tatar Shah School App",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#eef2ff",
