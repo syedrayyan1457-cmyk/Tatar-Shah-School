@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tatar Shah School</title>
+
+  <!-- PWA & theme -->
+  <meta name="theme-color" content="#2563eb"/>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="favicon.png" />
+
+  <style>
+    /* (same CSS as you provided, kept intact) */
+    :root{--glass-bg: rgba(255,255,255,0.55);--glass-border: rgba(255,255,255,0.5);--glass-dark: rgba(17,24,39,0.35);--accent:#2563eb;--accent-2:#f59e0b;--success:#16a34a}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:linear-gradient(180deg,#eef2ff 0%, #f8fafc 100%);color:#111;padding-bottom:120px}
+    .container{max-width:720px;margin:0 auto;padding:16px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    h1{font-size:20px;margin:0}
+    .small{font-size:13px;color:#555}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:0;cursor:pointer}
+    .btn-primary{background:var(--accent);color:white}
+    .btn-green{background:var(--success);color:white}
+    .btn-purple{background:#7c3aed;color:white}
+    .small-btn{padding:6px 10px;min-width:84px;border-radius:10px}
+    .btn-short{padding:6px 8px;border-radius:10px;min-width:84px}
+    .card{background:var(--glass-bg);backdrop-filter: blur(6px) saturate(110%);-webkit-backdrop-filter: blur(6px) saturate(110%);border:1px solid var(--glass-border);border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06);margin-bottom:12px}
+    .grid{display:grid;gap:12px}
+    .cols-2{grid-template-columns:repeat(2,1fr)}
+    img.profile{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 8px;display:block}
+    .passport{width:120px;height:160px;object-fit:cover;border-radius:8px;display:block;margin:12px auto}
+    .img-thumb{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer}
+    input,select,textarea{padding:8px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);width:100%;box-sizing:border-box;background:rgba(255,255,255,0.85);max-width:480px;margin:6px auto}
+    input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+    table{width:100%;border-collapse:collapse}
+    td,th{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
+    .nav{position:fixed;left:0;right:0;bottom:12px;height:50px;max-width:360px;margin:0 auto;background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);border-radius:28px;display:flex;justify-content:space-around;align-items:center;border:1px solid rgba(255,255,255,0.45);box-shadow:0 4px 18px rgba(0,0,0,0.12);padding:4px 10px}
+    .nav button{background:transparent;border:0;display:flex;flex-direction:column;align-items:center;color:#444}
+    .nav .active{color:var(--accent)}
+    .muted{color:#888;font-size:13px}
+    .hidden{display:none}
+    .back-btn{display:inline-block;margin-bottom:10px}
+    .danger{background:#ef4444;color:white}
+    .small-action{font-size:12px;padding:6px 8px;border-radius:8px}
+    .stack{display:flex;flex-direction:column;gap:8px}
+    .buttons-row{display:flex;gap:8px;justify-content:flex-start}
+    .buttons-row .btn{flex:0 0 auto}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:9999}
+    .modal.hidden{display:none !important}
+    .modal-content{position:relative;background:rgba(255,255,255,0.85);padding:8px;border-radius:10px;max-width:95%;max-height:95%;display:flex;flex-direction:column;align-items:center;backdrop-filter:blur(6px)}
+    .modal-content img{max-width:100%;max-height:80vh;transition:transform .12s ease}
+    .modal-controls{display:flex;gap:8px;margin-top:8px}
+    .home-buttons{margin-top:12px; display:flex; flex-direction:column; gap:12px;}
+    [dir="rtl"] .stack{direction:rtl}
+    @media(min-width:720px){ .cols-2{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:420px){ .passport{width:100px;height:140px} }
+    .question-card{background:rgba(255,255,255,0.9);border-radius:10px;padding:12px;margin-bottom:8px}
+    .option{display:block;padding:8px;border-radius:8px;border:1px solid #eee;margin:6px 0;cursor:pointer}
+    .option.correct{border-color:var(--success);background:rgba(16,185,129,0.06)}
+    .option.wrong{border-color:#ef4444;background:rgba(239,68,68,0.06)}
+    .option.selected{outline:2px solid rgba(37,99,235,0.12)}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div>
+      <h1 id="appTitle">Tatar Shah School</h1>
+      <div class="small muted" id="appSubtitle">Offline-first Work and Teacher Management</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="langSelect" class="btn small" title="Language selector">
+        <option value="en">English</option>
+        <option value="ur">اردو (Urdu)</option>
+      </select>
+      <button id="darkToggle" class="btn">Toggle</button>
+    </div>
+  </header>
+
+  <!-- PAGES -->
+  <main id="home" class="page">
+    <section class="card">
+      <h2 id="homeTitle">School</h2>
+      <p class="small" id="homeDesc">School related sections.</p>
+      <div class="home-buttons">
+        <button id="toSchoolBtn" class="btn btn-green">🏫 <span id="btnViewSchool">View School</span></button>
+        <button id="toTeachersBtn" class="btn btn-primary">👔 <span id="btnViewTeachers">View Teachers</span></button>
+        <button id="toPrincipalBtn" class="btn" style="background:var(--accent-2);color:white">👨‍🏫 <span id="btnViewPrincipal">View Principal</span></button>
+        <button id="toStudyMaterialBtn" class="btn btn-purple">📚 <span id="btnStudyMaterial">Study Material</span></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Teachers Page (view-only) -->
+  <section id="teachers-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="teachersTitle">Teachers</h2>
+      <p class="small" id="teachersDesc">List of teachers. Tap a teacher for details (view-only).</p>
+      <div id="teachersListPage" class="grid cols-2" style="margin-top:12px"></div>
+      <div id="noTeachers" class="small muted">No teachers yet.</div>
+    </section>
+  </section>
+
+  <!-- Teacher Detail Page -->
+  <section id="teacher-detail-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('teachers-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card center">
+      <h2 id="teacherDetailName">Teacher Name</h2>
+      <img id="teacherDetailPhoto" class="passport" src="https://via.placeholder.com/120x160" alt="Photo" />
+      <div id="teacherDetailInfo" class="small" style="max-width:480px;margin:8px auto;text-align:left"></div>
+    </section>
+  </section>
+
+  <!-- Principal Page (view-only) -->
+  <section id="principal-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="principalTitle">Principal</h2>
+      <p class="small" id="principalDesc">Principal details. Tap principal for more info.</p>
+      <div id="principalList" class="grid cols-2" style="margin-top:12px"></div>
+      <div id="noPrincipal" class="small muted">No principal added yet.</div>
+    </section>
+  </section>
+
+  <!-- Principal Detail Page -->
+  <section id="principal-detail-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('principal-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card center">
+      <h2 id="principalDetailName">Principal Name</h2>
+      <img id="principalDetailPhoto" class="passport" src="https://via.placeholder.com/120x160" alt="Photo" />
+      <div id="principalDetailInfo" class="small" style="max-width:480px;margin:8px auto;text-align:left"></div>
+    </section>
+  </section>
+
+  <!-- Study Material Page -->
+  <section id="study-material-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>Study Material</h2>
+      <p class="small">Books, Practice Papers and MCQ Quizzes.</p>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+        <button id="toBooksFromStudy" class="btn btn-primary">📘 Books</button>
+        <button id="toPracticePapersBtn" class="btn btn-green">📝 Practice Papers</button>
+        <button id="toMcqListBtn" class="btn btn-purple">❓ MCQ Quizzes</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- Books Page -->
+  <section id="study-books-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('study-material-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>Books</h2>
+      <p class="small">PDF books uploaded by admin.</p>
+      <div id="booksGrid" class="grid cols-2" style="margin-top:12px"></div>
+    </section>
+  </section>
+
+  <!-- Practice Papers Page -->
+  <section id="practice-papers-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('study-material-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>Practice Papers</h2>
+      <p class="small">Upload practice PDFs (admin). Students can open them.</p>
+      <div id="practiceGrid" class="grid cols-2" style="margin-top:12px"></div>
+    </section>
+  </section>
+
+  <!-- MCQ Quiz List Page -->
+  <section id="mcq-list-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('study-material-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>MCQ Quizzes</h2>
+      <p class="small">Select a quiz to start. Admin can create quizzes in Admin panel.</p>
+      <div id="mcqList" class="grid cols-2" style="margin-top:12px"></div>
+    </section>
+  </section>
+
+  <!-- Quiz Take Page -->
+  <section id="mcq-take-page" class="page hidden">
+    <button class="btn back-btn" onclick="stopQuizAndBack()">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="mcqTitle">Quiz</h2>
+      <div class="small muted" id="mcqTimer">Time: 00:00</div>
+      <div id="mcqQuestions" style="margin-top:12px"></div>
+      <div style="margin-top:12px" id="mcqSubmitArea"><button id="submitQuizBtn" class="btn btn-primary">Submit Quiz</button></div>
+      <div id="mcqResult" class="hidden" style="margin-top:12px"></div>
+    </section>
+  </section>
+
+  <!-- School Main Page -->
+  <section id="school-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="schoolTitle">School</h2>
+      <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="toImagesBtn">📷 <span id="btnImages">School Images</span></button>
+        <button class="btn btn-green" id="toTimingsBtn">⏰ <span id="btnTimings">School Timings</span></button>
+      </div>
+      <p class="small" id="schoolDesc">General school info, notices, events.</p>
+    </section>
+  </section>
+
+  <!-- School Images Page (missing in original: added) -->
+  <section id="school-images-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('school-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>School Images</h2>
+      <div id="imagesGrid" class="grid cols-2" style="margin-top:12px"></div>
+    </section>
+  </section>
+
+  <!-- School Timings Page (missing in original: added) -->
+  <section id="school-timings-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('school-page')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2>School Timings</h2>
+      <p class="small">Regular timings for each day.</p>
+      <table id="timingsTable" style="margin-top:12px"></table>
+    </section>
+  </section>
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="modal hidden" onclick="closeImageModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <img id="modalImg" src="" alt="" style="transform:scale(1)"/>
+      <div class="modal-controls">
+        <button id="zoomOutBtn" class="btn btn-short">−</button>
+        <button id="zoomInBtn" class="btn btn-short">+</button>
+        <button id="closeModalBtn" class="btn btn-short">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Page -->
+  <section id="about-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="aboutTitle">About</h2>
+      <p class="small" id="aboutDesc">Tatar Shah School - Offline-first Work and Teacher Management App.</p>
+    </section>
+  </section>
+
+  <!-- Admin Passcode Page -->
+  <section id="admin-pass-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="adminPassTitle">Admin Access</h2>
+      <p class="small" id="adminPassDesc">Enter admin passcode to open Admin Panel.</p>
+      <div style="margin-top:10px">
+        <input id="adminPassInput" type="password" placeholder="Enter passcode" />
+        <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-start;" class="buttons-row">
+          <button id="adminPassSubmit" class="small-btn btn-primary">Enter</button>
+          <button id="adminPassCancel" class="small-btn">Cancel</button>
+        </div>
+        <div class="small muted" id="adminPassNote" style="margin-top:8px">Enter the admin passcode to manage teachers, images, timings and books.</div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Admin Page -->
+  <section id="admin-page" class="page hidden">
+    <button class="btn back-btn" onclick="showPage('home')">← <span data-i18n="back">Back</span></button>
+    <section class="card">
+      <h2 id="adminTitle">Admin Panel</h2>
+      <p class="small" id="adminDesc">Manage Teachers, Principal, Images, Timings, Books, Practice Papers and MCQ Quizzes. Admin session lasts until refresh.</p>
+
+      <!-- Teachers management -->
+      <div style="margin-top:8px">
+        <h4 id="adminTeachersTitle">Teachers (Add / Edit / Delete)</h4>
+        <div class="stack" id="teacherForm">
+          <input id="t_name" placeholder="Name" class="col"/>
+          <input id="t_phone" placeholder="Phone" class="col"/>
+          <input id="t_email" placeholder="Email" class="col"/>
+          <input id="t_qual" placeholder="Qualification" class="col"/>
+          <input id="t_exp" placeholder="Experience (yrs)" class="col"/>
+          <input id="t_class" placeholder="Class Teacher Of" class="col"/>
+          <input id="t_subject" placeholder="Subject" class="col"/>
+          <input type="file" id="t_photo" accept="image/*" class="col"/>
+        </div>
+        <div style="margin-top:8px" class="buttons-row">
+          <button id="saveTeacherBtn" class="btn btn-primary btn-short">Save</button>
+          <button id="clearTeacherBtn" class="btn btn-short">Clear</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <h5>Existing Teachers</h5>
+          <div id="adminTeachersList" class="grid cols-2"></div>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- Principal management -->
+      <div style="margin-top:8px">
+        <h4 id="adminPrincipalTitle">Principal (Add / Edit / Delete)</h4>
+        <div class="stack" id="principalForm">
+          <input id="p_name" placeholder="Name" class="col"/>
+          <input id="p_phone" placeholder="Phone" class="col"/>
+          <input id="p_email" placeholder="Email" class="col"/>
+          <input id="p_qual" placeholder="Qualification" class="col"/>
+          <input id="p_exp" placeholder="Experience (yrs)" class="col"/>
+          <input type="file" id="p_photo" accept="image/*" class="col"/>
+        </div>
+        <div style="margin-top:8px" class="buttons-row">
+          <button id="savePrincipalBtn" class="btn btn-primary btn-short">Save</button>
+          <button id="clearPrincipalBtn" class="btn btn-short">Clear</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <h5 id="principalRecordTitle">Principal Record</h5>
+          <div id="adminPrincipalList" class="grid cols-2"></div>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- Images management -->
+      <div style="margin-top:8px">
+        <h4 id="adminImagesTitle">School Images (Upload / Delete)</h4>
+        <div class="stack" style="align-items:flex-start">
+          <input id="adminImageFile" type="file" accept="image/*" class="col"/>
+          <button id="adminUploadImageBtn" class="btn btn-primary btn-short">Upload</button>
+        </div>
+        <div style="margin-top:12px"><div id="adminImagesList" class="grid cols-2"></div></div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- Timings management -->
+      <div style="margin-top:8px">
+        <h4 id="adminTimingsTitle">School Timings (Edit & Save)</h4>
+        <table id="adminTimingsTable"></table>
+        <div style="margin-top:8px" class="buttons-row">
+          <button id="adminSaveTimingsBtn" class="btn btn-green btn-short">Save</button>
+          <button id="adminResetTimingsBtn" class="btn btn-short">Reset</button>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- Books management -->
+      <div style="margin-top:8px">
+        <h4 id="adminBooksTitle">Books (Upload / Delete)</h4>
+        <div class="stack" style="align-items:flex-start">
+          <input id="adminBookFile" type="file" accept="application/pdf" class="col"/>
+          <input id="adminBookName" placeholder="Book name" class="col"/>
+          <button id="adminUploadBookBtn" class="btn btn-purple btn-short">Upload</button>
+        </div>
+        <div style="margin-top:12px"><div id="adminBooksList" class="grid cols-2"></div></div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- Practice Papers management -->
+      <div style="margin-top:8px">
+        <h4>Practice Papers (Upload / Delete)</h4>
+        <div class="stack" style="align-items:flex-start">
+          <input id="adminPracticeFile" type="file" accept="application/pdf" class="col"/>
+          <input id="adminPracticeName" placeholder="Paper name" class="col"/>
+          <button id="adminUploadPracticeBtn" class="btn btn-primary btn-short">Upload</button>
+        </div>
+        <div style="margin-top:12px"><div id="adminPracticeList" class="grid cols-2"></div></div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <!-- MCQ Quizzes management -->
+      <div style="margin-top:8px">
+        <h4>MCQ Quizzes (Create / Edit / Delete)</h4>
+        <div class="stack" style="align-items:flex-start">
+          <input id="quiz_title" placeholder="Quiz Title (e.g., Class 5 - Chapter 1)" class="col"/>
+          <input id="quiz_class" placeholder="Class (e.g., 5)" class="col"/>
+          <input id="quiz_time" placeholder="Time limit (minutes)" class="col"/>
+          <div style="margin-top:6px; font-size:13px; color:#555">Add questions below (choose correct option)</div>
+          <input id="q_text" placeholder="Question text" class="col"/>
+          <input id="q_opt_a" placeholder="Option A" class="col"/>
+          <input id="q_opt_b" placeholder="Option B" class="col"/>
+          <input id="q_opt_c" placeholder="Option C" class="col"/>
+          <input id="q_opt_d" placeholder="Option D" class="col"/>
+          <select id="q_correct" class="col"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+          <div style="display:flex;gap:8px">
+            <button id="addQuestionBtn" class="btn btn-primary btn-short">Add Question</button>
+            <button id="saveQuizBtn" class="btn btn-green btn-short">Save Quiz</button>
+            <button id="clearQuizFormBtn" class="btn btn-short">Clear</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px"><h5>Existing Quizzes</h5><div id="adminQuizList" class="grid cols-2"></div></div>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <div style="margin-top:8px">
+        <h4 id="adminSettingsTitle">Admin Settings</h4>
+        <div class="stack">
+          <input id="newAdminPass" placeholder="Change admin pass (optional)" class="col"/>
+          <div class="buttons-row" style="margin-top:6px">
+            <button id="saveAdminPassBtn" class="btn btn-green btn-short">Save Pass</button>
+          </div>
+        </div>
+        <div class="small muted" style="margin-top:6px">Current pass is hidden for security. Default initial pass: 147853</div>
+        <div style="margin-top:8px">
+          <button id="adminLogoutBtn" class="btn danger btn-short">Logout</button>
+        </div>
+      </div>
+
+    </section>
+  </section>
+
+</div>
+
+<!-- Bottom Nav -->
+<div class="nav">
+  <button id="navHome"><div>🏠</div><div style="font-size:12px" id="navHomeLabel">Home</div></button>
+  <button id="navAdmin"><div>🔒</div><div style="font-size:12px" id="navAdminLabel">Admin</div></button>
+  <button id="navAbout"><div>ℹ️</div><div style="font-size:12px" id="navAboutLabel">About</div></button>
+</div>
+
+<script>
+/* --- App JS: essentially the same functionality as your original script,
+       with a couple of small fixes and safety checks. --- */
+
+const STORAGE_KEYS = {
+  teachers: 'tatar_teachers_v1',
+  principal: 'tatar_principal_v1',
+  images: 'tatar_images_v1',
+  timings: 'tatar_timings_v1',
+  books: 'tatar_books_v1',
+  practice: 'tatar_practice_v1',
+  quizzes: 'tatar_quizzes_v1',
+  adminPass: 'tatar_adminpass_v1',
+  lang: 'tatar_lang_v1'
+};
+
+function loadJSON(k, fallback){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback;}catch(e){return fallback;} }
+function saveJSON(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+let teachers = loadJSON(STORAGE_KEYS.teachers, []);
+let principal = loadJSON(STORAGE_KEYS.principal, []);
+let images = loadJSON(STORAGE_KEYS.images, []);
+let timings = loadJSON(STORAGE_KEYS.timings, [
+  {day:'Monday',opens:'09:00',closes:'16:00'},
+  {day:'Tuesday',opens:'09:00',closes:'16:00'},
+  {day:'Wednesday',opens:'09:00',closes:'16:00'},
+  {day:'Thursday',opens:'09:00',closes:'16:00'},
+  {day:'Friday',opens:'09:00',closes:'16:00'},
+  {day:'Saturday',opens:'09:00',closes:'13:00'}
+]);
+let books = loadJSON(STORAGE_KEYS.books, []);
+let practice = loadJSON(STORAGE_KEYS.practice, []);
+let quizzes = loadJSON(STORAGE_KEYS.quizzes, []);
+let isAdmin = false;
+
+// initial admin pass
+if(!localStorage.getItem(STORAGE_KEYS.adminPass)) localStorage.setItem(STORAGE_KEYS.adminPass, '147853');
+
+// language
+const translations = { en: {}, ur: {} };
+let currentLang = localStorage.getItem(STORAGE_KEYS.lang) || 'en';
+document.getElementById('langSelect').value = currentLang;
+applyLanguage(currentLang);
+document.getElementById('langSelect').addEventListener('change', e=>{ const v = e.target.value; applyLanguage(v); localStorage.setItem(STORAGE_KEYS.lang, v); });
+function t(k){ return k; }
+function applyLanguage(lang){ currentLang = lang; if(lang === 'ur'){ document.documentElement.dir = 'rtl'; } else { document.documentElement.dir = 'ltr'; } }
+
+// page show/hide
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); const el = document.getElementById(id); if(el) el.classList.remove('hidden'); renderTeachersPage(); renderPrincipalPage(); renderImages(); renderTimings(); renderBooks(); renderPractice(); renderQuizzesList(); renderAdminLists(); }
+
+// RENDERS
+function renderTeachersPage(){ const el = document.getElementById('teachersListPage'); if(!el) return; el.innerHTML=''; if(teachers.length===0){ document.getElementById('noTeachers').style.display='block'; return; } document.getElementById('noTeachers').style.display='none'; const grid = document.createElement('div'); grid.className='grid cols-2'; teachers.forEach((t,idx)=>{ const c = document.createElement('div'); c.className='card center'; c.innerHTML = '<img class="profile" src="'+(t.photo||'https://via.placeholder.com/80')+'"/><div class="font">'+(t.name||'')+'</div><div class="small">'+(t.qualification||'')+' • '+(t.experience||'')+' yrs</div>'; c.style.cursor = 'pointer'; c.onclick = ()=>openTeacherDetail(idx); grid.appendChild(c); }); el.appendChild(grid); }
+function openTeacherDetail(idx){ const t = teachers[idx]; if(!t) return; document.getElementById('teacherDetailName').textContent = t.name || 'Teacher'; document.getElementById('teacherDetailPhoto').src = t.photo || 'https://via.placeholder.com/120x160'; const info = []; if(t.qualification) info.push('<strong>Qualification:</strong> '+t.qualification); if(t.experience) info.push('<strong>Experience:</strong> '+t.experience+' yrs'); if(t.classTeacherOf) info.push('<strong>Class Teacher Of:</strong> '+t.classTeacherOf); if(t.subject) info.push('<strong>Subject:</strong> '+t.subject); if(t.phone) info.push('<strong>Phone:</strong> '+t.phone); if(t.email) info.push('<strong>Email:</strong> '+t.email); document.getElementById('teacherDetailInfo').innerHTML = info.join('<br/>'); showPage('teacher-detail-page'); }
+function renderPrincipalPage(){ const el = document.getElementById('principalList'); if(!el) return; el.innerHTML=''; if(!principal || principal.length===0){ document.getElementById('noPrincipal').style.display='block'; return; } document.getElementById('noPrincipal').style.display='none'; const grid = document.createElement('div'); grid.className='grid cols-2'; principal.forEach((p,idx)=>{ const c = document.createElement('div'); c.className='card center'; c.innerHTML = '<img class="profile" src="'+(p.photo||'https://via.placeholder.com/80')+'"/><div class="font">'+(p.name||'')+'</div><div class="small">'+(p.qualification||'')+' • '+(p.experience||'')+' yrs</div>'; c.style.cursor = 'pointer'; c.onclick = ()=>openPrincipalDetail(idx); grid.appendChild(c); }); el.appendChild(grid); }
+function openPrincipalDetail(idx){ const p = principal[idx]; if(!p) return; document.getElementById('principalDetailName').textContent = p.name || 'Principal'; document.getElementById('principalDetailPhoto').src = p.photo || 'https://via.placeholder.com/120x160'; const info = []; if(p.qualification) info.push('<strong>Qualification:</strong> '+p.qualification); if(p.experience) info.push('<strong>Experience:</strong> '+p.experience+' yrs'); if(p.phone) info.push('<strong>Phone:</strong> '+p.phone); if(p.email) info.push('<strong>Email:</strong> '+p.email); document.getElementById('principalDetailInfo').innerHTML = info.join('<br/>'); showPage('principal-detail-page'); }
+
+function renderImages(){ const g = document.getElementById('imagesGrid'); if(!g) return; g.innerHTML=''; if(images.length===0){ g.innerHTML = '<div class="small muted">No images yet.</div>'; return; } images.forEach((im,idx)=>{ const d = document.createElement('div'); d.className='card'; const img = document.createElement('img'); img.className='img-thumb'; img.src = im.dataUrl; img.alt = im.name; img.onclick = ()=>openImageModal(im.dataUrl, im.name); d.appendChild(img); const n = document.createElement('div'); n.className='small'; n.textContent = im.name; d.appendChild(n); g.appendChild(d); }); }
+
+function renderTimings(){ const tbl = document.getElementById('timingsTable'); if(!tbl) return; tbl.innerHTML=''; const thead = document.createElement('thead'); thead.innerHTML = '<tr><th>Day</th><th>Opens</th><th>Closes</th></tr>'; tbl.appendChild(thead); const tbody = document.createElement('tbody'); timings.forEach((t,i)=>{ const tr = document.createElement('tr'); tr.innerHTML = '<td>'+t.day+'</td><td>'+t.opens+'</td><td>'+t.closes+'</td>'; tbody.appendChild(tr); }); tbl.appendChild(tbody); }
+
+/* Study material renders */
+function renderBooks(){ const g = document.getElementById('booksGrid'); if(!g) return; g.innerHTML=''; if(books.length===0){ g.innerHTML = '<div class="small muted">No books uploaded yet.</div>'; return; } books.forEach((b,idx)=>{ const d = document.createElement('div'); d.className='book-card card'; d.innerHTML = '<div style="font-size:28px">📘</div><div class="font" style="margin-top:8px">'+b.name+'</div>'; const openBtn = document.createElement('button'); openBtn.className='btn btn-primary'; openBtn.textContent='Open'; openBtn.onclick=()=>{ const w = window.open(''); w.document.write('<iframe src="'+b.dataUrl+'" style="width:100%;height:100vh;border:0"></iframe>'); }; const ctr = document.createElement('div'); ctr.style.marginTop='8px'; ctr.appendChild(openBtn); d.appendChild(ctr); g.appendChild(d); }); }
+function renderPractice(){ const g = document.getElementById('practiceGrid'); if(!g) return; g.innerHTML=''; if(practice.length===0){ g.innerHTML = '<div class="small muted">No practice papers uploaded yet.</div>'; return; } practice.forEach((p,idx)=>{ const d = document.createElement('div'); d.className='card'; d.innerHTML = '<div class="small">'+p.name+'</div>'; const openBtn = document.createElement('button'); openBtn.className='btn btn-primary'; openBtn.textContent='Open'; openBtn.onclick=()=>{ const w = window.open(''); w.document.write('<iframe src="'+p.dataUrl+'" style="width:100%;height:100vh;border:0"></iframe>'); }; d.appendChild(openBtn); g.appendChild(d); }); }
+
+/* Quizzes */
+function renderQuizzesList(){ const g = document.getElementById('mcqList'); if(!g) return; g.innerHTML=''; if(quizzes.length===0){ g.innerHTML = '<div class="small muted">No quizzes available.</div>'; return; } quizzes.forEach((q,idx)=>{ const d = document.createElement('div'); d.className='card'; d.innerHTML = '<strong>'+q.title+'</strong><div class="small">Class: '+q.class+' • Time: '+q.time+' min</div>'; const start = document.createElement('button'); start.className='btn btn-primary btn-short'; start.textContent='Start'; start.onclick = ()=>startQuiz(idx); d.appendChild(start); g.appendChild(d); }); }
+
+let currentQuiz = null; let userAnswers = {}; let quizTimerInterval = null; let timeLeft = 0;
+function startQuiz(idx){ currentQuiz = JSON.parse(JSON.stringify(quizzes[idx])); userAnswers = {}; timeLeft = (parseInt(currentQuiz.time)||0)*60; if(timeLeft<=0) timeLeft = 60*5; // default 5 min
+ document.getElementById('mcqTitle').textContent = currentQuiz.title; document.getElementById('mcqTimer').textContent = 'Time: '+formatTime(timeLeft);
+ renderQuizQuestions(); showPage('mcq-take-page'); quizTimerInterval = setInterval(()=>{ timeLeft--; if(timeLeft<=0){ clearInterval(quizTimerInterval); submitQuiz(); } document.getElementById('mcqTimer').textContent = 'Time: '+formatTime(timeLeft); },1000); }
+function formatTime(s){ const m = Math.floor(s/60); const sec = s%60; return (m<10?'0'+m:m)+':'+(sec<10?'0'+sec:sec); }
+function renderQuizQuestions(){ const container = document.getElementById('mcqQuestions'); container.innerHTML=''; currentQuiz.questions.forEach((q,i)=>{ const card = document.createElement('div'); card.className='question-card'; card.innerHTML = '<div><strong>Q'+(i+1)+'.</strong> '+q.text+'</div>'; ['A','B','C','D'].forEach(opt=>{ const b = document.createElement('div'); b.className='option'; b.textContent = opt + '. ' + q['opt_'+opt.toLowerCase()]; b.onclick = ()=>{ userAnswers[i]=opt; Array.from(card.querySelectorAll('.option')).forEach(el=>el.classList.remove('selected')); b.classList.add('selected'); }; card.appendChild(b); }); container.appendChild(card); }); }
+function submitQuiz(){ if(quizTimerInterval) clearInterval(quizTimerInterval); // grade
+ let correct=0; const total = currentQuiz.questions.length; const perQuestion = [];
+ currentQuiz.questions.forEach((q,i)=>{ const user = userAnswers[i]||null; const isCorrect = user === q.correct; if(isCorrect) correct++; perQuestion.push({question:q.text, selected:user, correct:q.correct, options:{A:q.opt_a,B:q.opt_b,C:q.opt_c,D:q.opt_d}}); });
+ const score = Math.round((correct/total)*100);
+ const res = document.getElementById('mcqResult'); res.classList.remove('hidden'); res.innerHTML = '<div class="card"><strong>Score: '+correct+'/'+total+' ('+score+'%)</strong></div>';
+ perQuestion.forEach((p,i)=>{ const qd = document.createElement('div'); qd.className='card'; qd.innerHTML = '<div><strong>Q'+(i+1)+':</strong> '+p.question+'</div>'; ['A','B','C','D'].forEach(opt=>{ const div = document.createElement('div'); div.className='option'; if(opt===p.correct) div.classList.add('correct'); if(p.selected && opt===p.selected && opt!==p.correct) div.classList.add('wrong'); div.textContent = opt + '. ' + p.options[opt]; qd.appendChild(div); }); res.appendChild(qd); }); document.getElementById('mcqSubmitArea').classList.add('hidden'); }
+function stopQuizAndBack(){ if(quizTimerInterval) clearInterval(quizTimerInterval); currentQuiz=null; userAnswers={}; document.getElementById('mcqSubmitArea').classList.remove('hidden'); document.getElementById('mcqResult').classList.add('hidden'); showPage('mcq-list-page'); }
+
+/* NAV and button binding */
+document.getElementById('toTeachersBtn').onclick = ()=>showPage('teachers-page');
+document.getElementById('toPrincipalBtn').onclick = ()=>showPage('principal-page');
+document.getElementById('toSchoolBtn').onclick = ()=>showPage('school-page');
+document.getElementById('toImagesBtn').onclick = ()=>showPage('school-images-page');
+document.getElementById('toTimingsBtn').onclick = ()=>showPage('school-timings-page');
+document.getElementById('toStudyMaterialBtn').onclick = ()=>showPage('study-material-page');
+document.getElementById('toBooksFromStudy').onclick = ()=>showPage('study-books-page');
+document.getElementById('toPracticePapersBtn').onclick = ()=>showPage('practice-papers-page');
+document.getElementById('toMcqListBtn').onclick = ()=>showPage('mcq-list-page');
+document.getElementById('navHome').onclick = ()=>showPage('home');
+document.getElementById('navAbout').onclick = ()=>showPage('about-page');
+
+/* Admin nav: opens passcode page */
+document.getElementById('navAdmin').onclick = ()=>showPage('admin-pass-page');
+
+document.getElementById('adminPassCancel').onclick = ()=>showPage('home');
+document.getElementById('adminPassSubmit').onclick = ()=>{ const input = document.getElementById('adminPassInput').value || ''; const stored = localStorage.getItem(STORAGE_KEYS.adminPass) || '147853'; if(input === stored){ isAdmin = true; document.getElementById('adminPassInput').value = ''; alert('Admin mode enabled'); showPage('admin-page'); } else { alert('Wrong passcode'); } };
+
+/* ADMIN ACTIONS */
+function loadTeacherForEdit(idx){ const t = teachers[idx]; if(!t) return; document.getElementById('t_name').value = t.name||''; document.getElementById('t_phone').value = t.phone||''; document.getElementById('t_email').value = t.email||''; document.getElementById('t_qual').value = t.qualification||''; document.getElementById('t_exp').value = t.experience||''; document.getElementById('t_class').value = t.classTeacherOf||''; document.getElementById('t_subject').value = t.subject||''; document.getElementById('t_photo').dataset.editIndex = idx; }
+document.getElementById('saveTeacherBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const name = document.getElementById('t_name').value.trim(); if(!name){ alert('Enter name'); return; } const phone = document.getElementById('t_phone').value.trim(); const email = document.getElementById('t_email').value.trim(); const qual = document.getElementById('t_qual').value.trim(); const exp = document.getElementById('t_exp').value.trim(); const cls = document.getElementById('t_class').value.trim(); const subj = document.getElementById('t_subject').value.trim(); const photoFile = document.getElementById('t_photo').files[0]; const editIndex = document.getElementById('t_photo').dataset.editIndex; const addOrUpdate = (photoData)=>{ if(editIndex !== undefined && editIndex !== null && editIndex !== ''){ teachers[editIndex] = {...teachers[editIndex], name, phone, email, qualification:qual, experience:exp, classTeacherOf:cls, subject:subj, photo:photoData||teachers[editIndex].photo||''}; delete document.getElementById('t_photo').dataset.editIndex; } else { teachers.unshift({id:Date.now(),name,phone,email,qualification:qual,experience:exp,classTeacherOf:cls,subject:subj,photo:photoData||''}); } saveJSON(STORAGE_KEYS.teachers,teachers); renderAdminLists(); renderTeachersPage(); alert('Saved'); clearTeacherForm(); }; if(photoFile){ const rdr=new FileReader(); rdr.onload=()=>addOrUpdate(rdr.result); rdr.readAsDataURL(photoFile); } else addOrUpdate(''); };
+document.getElementById('clearTeacherBtn').onclick = ()=>clearTeacherForm(); function clearTeacherForm(){ document.getElementById('t_name').value=''; document.getElementById('t_phone').value=''; document.getElementById('t_email').value=''; document.getElementById('t_qual').value=''; document.getElementById('t_exp').value=''; document.getElementById('t_class').value=''; document.getElementById('t_subject').value=''; document.getElementById('t_photo').value=''; delete document.getElementById('t_photo').dataset.editIndex; }
+
+/* Principal management */
+function loadPrincipalForEdit(idx){ const p = principal[idx]; if(!p) return; document.getElementById('p_name').value = p.name||''; document.getElementById('p_phone').value = p.phone||''; document.getElementById('p_email').value = p.email||''; document.getElementById('p_qual').value = p.qualification||''; document.getElementById('p_exp').value = p.experience||''; document.getElementById('p_photo').dataset.editIndex = idx; }
+document.getElementById('savePrincipalBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const name = document.getElementById('p_name').value.trim(); if(!name){ alert('Enter principal name'); return; } const phone = document.getElementById('p_phone').value.trim(); const email = document.getElementById('p_email').value.trim(); const qual = document.getElementById('p_qual').value.trim(); const exp = document.getElementById('p_exp').value.trim(); const photoFile = document.getElementById('p_photo').files[0]; const editIndex = document.getElementById('p_photo').dataset.editIndex; const addOrUpdate = (photoData)=>{ if(editIndex !== undefined && editIndex !== null && editIndex !== ''){ principal[editIndex] = {...principal[editIndex], name, phone, email, qualification:qual, experience:exp, photo:photoData||principal[editIndex].photo||''}; delete document.getElementById('p_photo').dataset.editIndex; } else { if(principal.length>0) principal[0] = {id:Date.now(),name,phone,email,qualification:qual,experience:exp,photo:photoData||''}; else principal.unshift({id:Date.now(),name,phone,email,qualification:qual,experience:exp,photo:photoData||''}); } saveJSON(STORAGE_KEYS.principal,principal); renderAdminLists(); renderPrincipalPage(); alert('Saved'); clearPrincipalForm(); }; if(photoFile){ const rdr=new FileReader(); rdr.onload=()=>addOrUpdate(rdr.result); rdr.readAsDataURL(photoFile); } else addOrUpdate(''); };
+document.getElementById('clearPrincipalBtn').onclick = ()=>clearPrincipalForm(); function clearPrincipalForm(){ document.getElementById('p_name').value=''; document.getElementById('p_phone').value=''; document.getElementById('p_email').value=''; document.getElementById('p_qual').value=''; document.getElementById('p_exp').value=''; document.getElementById('p_photo').value=''; delete document.getElementById('p_photo').dataset.editIndex; }
+
+/* Admin image upload */
+document.getElementById('adminUploadImageBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const f = document.getElementById('adminImageFile').files[0]; if(!f){ alert('Select image'); return; } const r = new FileReader(); r.onload = ()=>{ images.unshift({name:f.name,dataUrl:r.result,createdAt:Date.now()}); saveJSON(STORAGE_KEYS.images,images); renderAdminLists(); renderImages(); document.getElementById('adminImageFile').value=''; }; r.readAsDataURL(f); };
+
+/* Admin book upload */
+document.getElementById('adminUploadBookBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const f = document.getElementById('adminBookFile').files[0]; const name = document.getElementById('adminBookName').value.trim(); if(!f || !name){ alert('Select PDF and enter name'); return; } const r = new FileReader(); r.onload = ()=>{ books.unshift({id:Date.now(),name:name,dataUrl:r.result,createdAt:Date.now()}); saveJSON(STORAGE_KEYS.books,books); renderAdminLists(); renderBooks(); document.getElementById('adminBookFile').value=''; document.getElementById('adminBookName').value=''; }; r.readAsDataURL(f); };
+
+/* Admin practice upload */
+document.getElementById('adminUploadPracticeBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const f = document.getElementById('adminPracticeFile').files[0]; const name = document.getElementById('adminPracticeName').value.trim(); if(!f || !name){ alert('Select PDF and enter name'); return; } const r = new FileReader(); r.onload = ()=>{ practice.unshift({id:Date.now(),name:name,dataUrl:r.result,createdAt:Date.now()}); saveJSON(STORAGE_KEYS.practice,practice); renderAdminLists(); renderPractice(); document.getElementById('adminPracticeFile').value=''; document.getElementById('adminPracticeName').value=''; }; r.readAsDataURL(f); };
+
+/* Admin quiz creation (temporary in-memory question list) */
+let tempQuestions = [];
+document.getElementById('addQuestionBtn').onclick = ()=>{
+  const text = document.getElementById('q_text').value.trim();
+  const a = document.getElementById('q_opt_a').value.trim();
+  const b = document.getElementById('q_opt_b').value.trim();
+  const c = document.getElementById('q_opt_c').value.trim();
+  const d = document.getElementById('q_opt_d').value.trim();
+  const correct = document.getElementById('q_correct').value;
+  if(!text || !a || !b || !c || !d){ alert('Fill question and all options'); return; }
+  tempQuestions.push({text, opt_a:a, opt_b:b, opt_c:c, opt_d:d, correct});
+  alert('Question added (Total: '+tempQuestions.length+')');
+  document.getElementById('q_text').value=''; document.getElementById('q_opt_a').value=''; document.getElementById('q_opt_b').value=''; document.getElementById('q_opt_c').value=''; document.getElementById('q_opt_d').value=''; document.getElementById('q_correct').value='A';
+};
+
+document.getElementById('saveQuizBtn').onclick = ()=>{
+  if(!isAdmin){ alert('Admin only'); return; }
+  const title = document.getElementById('quiz_title').value.trim();
+  const cls = document.getElementById('quiz_class').value.trim();
+  const time = document.getElementById('quiz_time').value.trim();
+  if(!title || !cls || !time || tempQuestions.length===0){ alert('Enter title, class, time and add at least one question'); return; }
+  quizzes.unshift({id:Date.now(), title, class:cls, time:parseInt(time), questions:tempQuestions});
+  saveJSON(STORAGE_KEYS.quizzes,quizzes); tempQuestions = []; document.getElementById('quiz_title').value=''; document.getElementById('quiz_class').value=''; document.getElementById('quiz_time').value=''; alert('Quiz saved'); renderAdminLists(); renderQuizzesList();
+};
+
+document.getElementById('clearQuizFormBtn').onclick = ()=>{ tempQuestions = []; document.getElementById('quiz_title').value=''; document.getElementById('quiz_class').value=''; document.getElementById('quiz_time').value=''; document.getElementById('q_text').value=''; document.getElementById('q_opt_a').value=''; document.getElementById('q_opt_b').value=''; document.getElementById('q_opt_c').value=''; document.getElementById('q_opt_d').value=''; document.getElementById('q_correct').value='A'; }
+
+/* Admin lists (teachers/principal/images/books/practice/quizzes) */
+function renderAdminLists(){
+  const at = document.getElementById('adminTeachersList'); if(at) at.innerHTML='';
+  teachers.forEach((t,idx)=>{ const c = document.createElement('div'); c.className='card'; c.innerHTML = '<div class="row"><div style="flex:1"><strong>'+t.name+'</strong><div class="small">'+(t.qualification||'')+'</div></div></div>'; const ctr = document.createElement('div'); ctr.style.marginTop='8px'; const edit = document.createElement('button'); edit.className='small-action'; edit.textContent='Edit'; edit.onclick=()=>loadTeacherForEdit(idx); const del = document.createElement('button'); del.className='small-action danger'; del.textContent='Delete'; del.onclick=()=>{ if(confirm('Delete teacher?')){ teachers.splice(idx,1); saveJSON(STORAGE_KEYS.teachers,teachers); renderAdminLists(); renderTeachersPage(); } }; ctr.appendChild(edit); ctr.appendChild(del); c.appendChild(ctr); if(at) at.appendChild(c); });
+
+  const ap = document.getElementById('adminPrincipalList'); if(ap) ap.innerHTML='';
+  principal.forEach((p,idx)=>{ const c = document.createElement('div'); c.className='card'; c.innerHTML = '<div class="row"><div style="flex:1"><strong>'+p.name+'</strong><div class="small">'+(p.qualification||'')+'</div></div></div>'; const ctr = document.createElement('div'); ctr.style.marginTop='8px'; const edit = document.createElement('button'); edit.className='small-action'; edit.textContent='Edit'; edit.onclick=()=>loadPrincipalForEdit(idx); const del = document.createElement('button'); del.className='small-action danger'; del.textContent='Delete'; del.onclick=()=>{ if(confirm('Delete principal?')){ principal.splice(idx,1); saveJSON(STORAGE_KEYS.principal,principal); renderAdminLists(); renderPrincipalPage(); } }; ctr.appendChild(edit); ctr.appendChild(del); c.appendChild(ctr); if(ap) ap.appendChild(c); });
+
+  const ai = document.getElementById('adminImagesList'); if(ai) ai.innerHTML='';
+  images.forEach((im,idx)=>{ const d = document.createElement('div'); d.className='card'; d.innerHTML = '<img class="img-thumb" src="'+im.dataUrl+'"/><div class="small">'+im.name+'</div>'; const del = document.createElement('button'); del.className='small-action danger'; del.textContent='Delete'; del.onclick=()=>{ if(confirm('Delete image?')){ images.splice(idx,1); saveJSON(STORAGE_KEYS.images,images); renderAdminLists(); renderImages(); } }; d.appendChild(del); if(ai) ai.appendChild(d); });
+
+  const ab = document.getElementById('adminBooksList'); if(ab) ab.innerHTML='';
+  books.forEach((b,idx)=>{ const d = document.createElement('div'); d.className='book-card card'; d.innerHTML = '<div style="font-size:28px">📘</div><div class="font" style="margin-top:8px">'+b.name+'</div>'; const openBtn = document.createElement('button'); openBtn.className='small-action'; openBtn.textContent='Open'; openBtn.onclick=()=>{ const w = window.open(''); w.document.write('<iframe src="'+b.dataUrl+'" style="width:100%;height:100vh;border:0"></iframe>'); }; const delBtn = document.createElement('button'); delBtn.className='small-action danger'; delBtn.textContent='Delete'; delBtn.onclick=()=>{ if(confirm('Delete book?')){ books.splice(idx,1); saveJSON(STORAGE_KEYS.books,books); renderAdminLists(); renderBooks(); } }; const ctr = document.createElement('div'); ctr.style.marginTop='8px'; ctr.appendChild(openBtn); ctr.appendChild(delBtn); d.appendChild(ctr); if(ab) ab.appendChild(d); });
+
+  const apx = document.getElementById('adminPracticeList'); if(apx) apx.innerHTML='';
+  practice.forEach((p,idx)=>{ const d = document.createElement('div'); d.className='card'; d.innerHTML = '<div class="small">'+p.name+'</div>'; const openBtn = document.createElement('button'); openBtn.className='small-action'; openBtn.textContent='Open'; openBtn.onclick=()=>{ const w = window.open(''); w.document.write('<iframe src="'+p.dataUrl+'" style="width:100%;height:100vh;border:0"></iframe>'); }; const delBtn = document.createElement('button'); delBtn.className='small-action danger'; delBtn.textContent='Delete'; delBtn.onclick=()=>{ if(confirm('Delete paper?')){ practice.splice(idx,1); saveJSON(STORAGE_KEYS.practice,practice); renderAdminLists(); renderPractice(); } }; const ctr = document.createElement('div'); ctr.style.marginTop='8px'; ctr.appendChild(openBtn); ctr.appendChild(delBtn); d.appendChild(ctr); if(apx) apx.appendChild(d); });
+
+  const aq = document.getElementById('adminQuizList'); if(aq) aq.innerHTML='';
+  quizzes.forEach((q,idx)=>{ const d = document.createElement('div'); d.className='card'; d.innerHTML = '<strong>'+q.title+'</strong><div class="small">Class: '+q.class+' • Time: '+q.time+' min</div>'; const edit = document.createElement('button'); edit.className='small-action'; edit.textContent='Edit'; edit.onclick=()=>{ loadQuizForEdit(idx); }; const del = document.createElement('button'); del.className='small-action danger'; del.textContent='Delete'; del.onclick=()=>{ if(confirm('Delete quiz?')){ quizzes.splice(idx,1); saveJSON(STORAGE_KEYS.quizzes,quizzes); renderAdminLists(); renderQuizzesList(); } }; d.appendChild(edit); d.appendChild(del); if(aq) aq.appendChild(d); });
+
+  const atbl = document.getElementById('adminTimingsTable'); if(atbl) { atbl.innerHTML=''; const thead = document.createElement('thead'); thead.innerHTML = '<tr><th>Day</th><th>Opens</th><th>Closes</th></tr>'; atbl.appendChild(thead); const tbody = document.createElement('tbody'); timings.forEach((t,i)=>{ const tr = document.createElement('tr'); tr.innerHTML = '<td>'+t.day+'</td><td><input value="'+t.opens+'" data-i="'+i+'" data-field="opens" class="input-time"/></td><td><input value="'+t.closes+'" data-i="'+i+'" data-field="closes" class="input-time"/></td>'; tbody.appendChild(tr); }); atbl.appendChild(tbody); Array.from(atbl.querySelectorAll('.input-time')).forEach(inp=>{ inp.onchange = e => { const idx = +e.target.dataset.i; const f = e.target.dataset.field; timings[idx][f] = e.target.value; }; }); }
+}
+
+function loadQuizForEdit(idx){ const q = quizzes[idx]; if(!q) return; document.getElementById('quiz_title').value = q.title; document.getElementById('quiz_class').value = q.class; document.getElementById('quiz_time').value = q.time; tempQuestions = JSON.parse(JSON.stringify(q.questions)); alert('Loaded quiz for edit. Questions loaded into temporary list. Save to overwrite.'); }
+
+/* Admin timings & pass & other actions */
+document.getElementById('adminSaveTimingsBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } saveJSON(STORAGE_KEYS.timings,timings); alert('Timings saved'); renderTimings(); };
+document.getElementById('adminResetTimingsBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } timings = [ {day:'Monday',opens:'09:00',closes:'16:00'}, {day:'Tuesday',opens:'09:00',closes:'16:00'}, {day:'Wednesday',opens:'09:00',closes:'16:00'}, {day:'Thursday',opens:'09:00',closes:'16:00'}, {day:'Friday',opens:'09:00',closes:'16:00'}, {day:'Saturday',opens:'09:00',closes:'13:00'} ]; saveJSON(STORAGE_KEYS.timings,timings); renderAdminLists(); renderTimings(); alert('Reset to default'); };
+
+document.getElementById('saveAdminPassBtn').onclick = ()=>{ if(!isAdmin){ alert('Admin only'); return; } const np = document.getElementById('newAdminPass').value.trim(); if(!np){ alert('Enter new pass'); return; } localStorage.setItem(STORAGE_KEYS.adminPass, np); alert('Admin pass changed'); document.getElementById('newAdminPass').value=''; };
+
+document.getElementById('adminLogoutBtn').onclick = ()=>{ isAdmin = false; alert('Admin logged out'); showPage('home'); };
+
+/* IMAGE MODAL (zoom) */
+let currentScale = 1; function openImageModal(dataUrl, name){ currentScale = 1; const modal = document.getElementById('imageModal'); const img = document.getElementById('modalImg'); img.src = dataUrl; img.style.transform = 'scale(1)'; modal.classList.remove('hidden'); } function closeImageModal(){ document.getElementById('imageModal').classList.add('hidden'); } document.getElementById('zoomInBtn').onclick = ()=>{ currentScale = Math.min(4, currentScale + 0.25); document.getElementById('modalImg').style.transform = 'scale('+currentScale+')'; }; document.getElementById('zoomOutBtn').onclick = ()=>{ currentScale = Math.max(0.25, currentScale - 0.25); document.getElementById('modalImg').style.transform = 'scale('+currentScale+')'; }; document.getElementById('closeModalBtn').onclick = ()=>closeImageModal();
+
+/* submit quiz button: hook up to submitQuiz */
+document.getElementById('submitQuizBtn').onclick = submitQuiz;
+
+/* initial store save & initial render */
+saveJSON(STORAGE_KEYS.teachers,teachers); saveJSON(STORAGE_KEYS.principal,principal); saveJSON(STORAGE_KEYS.images,images); saveJSON(STORAGE_KEYS.timings,timings); saveJSON(STORAGE_KEYS.books,books); saveJSON(STORAGE_KEYS.practice,practice); saveJSON(STORAGE_KEYS.quizzes,quizzes);
+showPage('home');
+
+/* PWA: register service worker */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=> {
+    navigator.serviceWorker.register('/service-worker.js').catch(()=>{/* ignore registration failure */});
+  });
+}
+</script>
+
+</body>
+</html>
